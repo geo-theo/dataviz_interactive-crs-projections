@@ -1,0 +1,13 @@
+{
+  "name": "projection-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An animated D3 map projection explorer for GitHub Pages",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

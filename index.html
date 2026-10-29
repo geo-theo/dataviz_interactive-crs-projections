@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f4">
+  <meta name="description" content="Watch the world change shape. Explore 16 animated map projections, highlight a country, and compare distortion with equal-area Tissot circles.">
+  <title>Projection Atlas — The world, in perspective</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./vendor/d3.min.js"></script>
+  <script defer src="./vendor/d3-geo-projection.min.js"></script>
+  <script defer src="./vendor/topojson-client.min.js"></script>
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Projection Atlas home">
+      <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><circle cx="18" cy="18" r="15"/><ellipse cx="18" cy="18" rx="7" ry="15"/><path d="M3 18h30M6 9.5c7 4 17 4 24 0M6 26.5c7-4 17-4 24 0"/></svg>
+      <span>Projection<span class="brand-second">Atlas</span></span>
+    </a>
+    <div class="controls" role="group" aria-label="Map controls">
+      <div class="select-field projection-field">
+        <label for="projection">Projection</label>
+        <select id="projection" disabled aria-describedby="projection-description"><option>Loading projections…</option></select>
+      </div>
+      <div class="select-field country-field">
+        <label for="country">Country</label>
+        <select id="country" disabled><option>Loading countries…</option></select>
+      </div>
+      <button class="tissot-toggle" id="tissot-toggle" type="button" aria-pressed="false" aria-describedby="tissot-description" disabled>
+        <svg class="circle-icon" width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="12" r="5.5"/><ellipse cx="17" cy="12" rx="4" ry="8"/></svg>
+        <span>Tissot Circles</span><span class="switch" aria-hidden="true"><span></span></span>
+      </button>
+    </div>
+    <span class="header-note"><span></span> A matter of perspective</span>
+  </header>
+
+  <main id="map-stage" class="map-stage" aria-label="Interactive world map">
+    <div class="map-heading" aria-hidden="true"><span class="eyebrow">One world. Many perspectives.</span><span class="map-hint">Change the projection. Watch the world reshape.</span></div>
+    <svg id="world-map" role="img" aria-labelledby="map-title map-description" preserveAspectRatio="xMidYMid meet">
+      <title id="map-title">World map</title>
+      <desc id="map-description">Choose a projection and a country using the controls above.</desc>
+      <defs>
+        <pattern id="circle-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1"/></pattern>
+      </defs>
+      <g id="map-layers">
+        <path id="ocean" class="ocean"/>
+        <path id="graticule" class="graticule"/>
+        <path id="land" class="land"/>
+        <path id="borders" class="borders"/>
+        <path id="selected-country" class="selected-country"/>
+        <g id="indicators" class="indicators" hidden></g>
+        <path id="outline" class="outline"/>
+      </g>
+    </svg>
+    <div class="loading" id="loading" role="status"><span class="loading-globe" aria-hidden="true">◎</span><span>Unfolding the world…</span></div>
+    <div class="error" id="error" role="alert" hidden><strong>The map couldn’t load.</strong><span>Please refresh to try again.</span></div>
+
+    <div class="map-caption">
+      <div class="projection-caption">
+        <div class="projection-kicker"><span id="projection-kind">Compromise projection</span><span class="transition-status" id="transition-status" aria-hidden="true">Transforming<span>…</span></span></div>
+        <h1 id="projection-name">Natural Earth I</h1>
+        <p id="projection-description">A balanced view of the world, with softly curved meridians.</p>
+      </div>
+      <div class="circle-caption" id="circle-caption" hidden>
+        <span class="eyebrow"><span class="circle-key"></span> Equal on the globe</span>
+        <p id="tissot-description">Both circles have a 5° radius and equal spherical area. Their projected shapes reveal distortion.</p>
+        <span class="circle-positions" id="circle-positions"></span>
+      </div>
+    </div>
+    <footer class="map-footer">
+      <span class="country-key"><span></span><span id="country-name">Brazil</span><span class="legend-separator">/</span><span class="subtle">Selected country</span></span>
+      <span class="map-credit">Natural Earth · 1:110m<span class="credit-divider">/</span>16 ways to see the world</span>
+    </footer>
+    <div class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
+    <noscript><div class="error">Enable JavaScript to explore the map projections.</div></noscript>
+  </main>
+</body>
+</html>
