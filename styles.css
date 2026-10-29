@@ -59,6 +59,14 @@ button[aria-pressed="true"] {
   position: relative;
 }
 
+.lab-link {
+  color: #355c43;
+  font-size: 12px;
+  padding: 5px 8px;
+  white-space: nowrap;
+  text-underline-offset: 3px;
+}
+
 #world-map {
   display: block;
   width: 100%;

@@ -1,5 +1,29 @@
 # Map projections
 
+## Light & paper projection lab
+
+Open **[the Projection Lab](https://geo-theo.github.io/dataviz_interactive-crs-projections/lab/)**
+for a second interactive visual inspired by a GIS classroom's lighted globe.
+Choose an equatorial cylinder, transverse cylinder, tangent cone, or polar plane;
+place the paper, turn on the central light, trace the grid and coastline shadows,
+and unfold the paper into a map. Run the full animation, advance one step at a
+time, or scrub it manually. Drag or use arrow keys to orbit the apparatus; turn
+the globe with the longitude slider. A contact-latitude slider adjusts the cone.
+Optional equal-size spherical circles reveal distortion.
+
+`lab/geometry.js` computes ray/surface intersections on a unit sphere and exact
+isometric development of the cylinder and cone. D3 clips and resamples the
+geographic geometry before it is placed on the paper. The finite paper explicitly
+omits rays beyond its edges. These are central cylindrical, transverse central
+cylindrical, perspective conic, and polar gnomonic projections; the central-light
+model does not produce Mercator or Lambert conformal conic. A projection alone
+is not a complete CRS or datum transformation.
+
+The lab shares the repository's bundled D3/TopoJSON and Natural Earth data, has
+no external runtime dependencies, supports keyboard controls and reduced motion,
+and is included in the existing GitHub Pages build. Local preview:
+<http://127.0.0.1:4173/lab/>.
+
 A full-page, animated map projection explorer built with vanilla HTML, CSS,
 JavaScript, D3, and TopoJSON. The page contains only two native dropdowns, a
 Tissot Circles toggle, and the map. Designed for GitHub Pages with no runtime CDN,

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <meta name="description" content="Put a paper cylinder, cone, or plane around a lighted globe. Trace its shadows and unfold your own map in this interactive D3 projection lab.">
+  <title>The Projection Lab — from globe to paper</title>
+  <link rel="stylesheet" href="./lab.css">
+  <script defer src="../vendor/d3.min.js"></script>
+  <script defer src="../vendor/topojson-client.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="./" aria-label="Projection Lab home"><span class="brand-globe" aria-hidden="true">⊕</span> PROJECTION LAB<span class="edition">AN INTERACTIVE FIELD GUIDE</span></a>
+    <a class="atlas-link" href="../">Explore the projection atlas <span aria-hidden="true">↗</span></a>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow"><span></span> EXPERIMENT 01 / FROM SPHERE TO SHEET</p><h1 id="page-title">A globe. A light.<br>A piece of <em>paper.</em></h1></div>
+      <div class="intro-copy"><p>How do you flatten a world? Wrap paper around a wireframe globe, switch on the light, and follow the shadows.</p><p class="intro-note">A hands-on introduction to map projections. No GIS experience needed.</p></div>
+    </section>
+
+    <section class="lab" aria-label="Interactive light and paper experiment">
+      <aside class="toolbox">
+        <div class="section-label"><span>01</span> CHOOSE YOUR PAPER</div>
+        <div class="surface-options" role="group" aria-label="Paper surface">
+          <button class="surface-option active" data-mode="cylinder" aria-pressed="true"><svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="11" rx="13" ry="5"/><path d="M11 11v26c0 7 26 7 26 0V11M11 37c0-7 26-7 26 0"/><path class="icon-globe" d="M24 13a11 11 0 1 0 0 22 11 11 0 0 0 0-22Z"/></svg><span><strong>Cylinder</strong><small>A sleeve around the equator</small></span><span class="option-dot"></span></button>
+          <button class="surface-option" data-mode="transverse" aria-pressed="false"><svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="11" cy="24" rx="5" ry="13"/><path d="M11 11h26c7 0 7 26 0 26H11M37 11c-7 0-7 26 0 26"/><circle class="icon-globe" cx="24" cy="24" r="11"/></svg><span><strong>Transverse cylinder</strong><small>Turn the sleeve on its side</small></span><span class="option-dot"></span></button>
+          <button class="surface-option" data-mode="cone" aria-pressed="false"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m24 4-18 34c0 9 36 9 36 0L24 4ZM6 38c0-9 36-9 36 0"/><path class="icon-globe" d="M14 29a11 11 0 0 1 20 0"/></svg><span><strong>Tangent cone</strong><small>A paper hat for the globe</small></span><span class="option-dot"></span></button>
+          <button class="surface-option" data-mode="azimuthal" aria-pressed="false"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m5 15 27-8 12 10-27 8L5 15Z"/><circle class="icon-globe" cx="24" cy="31" r="12"/><path d="M24 19v24m-12-12h24"/></svg><span><strong>Polar plane</strong><small>A sheet touching the North Pole</small></span><span class="option-dot"></span></button>
+        </div>
+        <div class="settings">
+          <label class="range-label" for="meridian">Globe longitude <output id="meridian-value" for="meridian">0°</output></label>
+          <input id="meridian" type="range" min="-180" max="180" step="5" value="0" aria-describedby="longitude-help">
+          <p class="setting-help" id="longitude-help">Turn the Earth inside the paper.</p>
+          <div id="cone-settings" hidden><label class="range-label" for="parallel">Contact latitude <output id="parallel-value" for="parallel">35° N</output></label><input id="parallel" type="range" min="20" max="65" value="35" step="1"></div>
+          <label class="check-label"><input type="checkbox" id="show-rays" checked><span>Show light rays</span><span class="ray-swatch"></span></label>
+          <label class="check-label"><input type="checkbox" id="show-circles"><span>Compare equal circles</span><span class="circle-swatch"></span></label>
+        </div>
+        <div class="contact-note"><span class="contact-mark"></span><p id="contact-copy">The paper touches the globe along the <strong>equator.</strong> Look for the green contact line.</p></div>
+      </aside>
+
+      <div class="workbench">
+        <div class="bench-heading"><span><span class="live-dot"></span> THE LIGHT & PAPER EXPERIMENT</span><button id="reset" class="text-button" type="button">↺ Reset</button></div>
+        <div class="scene-wrap">
+          <svg id="scene" viewBox="0 0 1040 590" role="img" aria-labelledby="scene-title scene-description" tabindex="0" aria-describedby="view-help">
+            <title id="scene-title">A wireframe globe inside a paper cylinder</title>
+            <desc id="scene-description">Choose a paper surface and run the experiment to see light rays project the globe onto paper, then unfold it into a map.</desc>
+            <defs>
+              <radialGradient id="globe-fill" cx="35%" cy="30%"><stop offset="0" stop-color="#f4f5e9"/><stop offset=".75" stop-color="#dce4d7"/><stop offset="1" stop-color="#ced9cc"/></radialGradient>
+              <radialGradient id="bulb-glow"><stop offset="0" stop-color="#ffd984" stop-opacity=".85"/><stop offset=".25" stop-color="#ffc867" stop-opacity=".3"/><stop offset="1" stop-color="#ffc867" stop-opacity="0"/></radialGradient>
+              <filter id="paper-shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+              <clipPath id="scene-clip"><rect width="1040" height="590"/></clipPath>
+            </defs>
+            <g clip-path="url(#scene-clip)"><ellipse id="floor-shadow" cx="520" cy="505" rx="225" ry="20" fill="#253d31" opacity=".08" filter="url(#paper-shadow)"/><g id="paper-back"></g><g id="globe-back"></g><g id="rays-back"></g><g id="globe-front"></g><g id="paper-front"></g><g id="shadows"></g><g id="rays-front"></g><g id="scene-labels"></g></g>
+          </svg>
+          <div class="scene-caption"><span id="view-help">↔ Drag to orbit · arrow keys also work</span><button id="view-reset" type="button" class="text-button">Reset view</button></div>
+          <div class="scene-badge" id="scene-badge">TANGENT CYLINDER <span>Earth radius = 1</span></div>
+          <div id="loading" class="loading" role="status">Setting up the globe…</div>
+          <div id="error" class="loading error" role="alert" hidden>The globe couldn’t load. <button type="button" onclick="location.reload()">Try again</button></div>
+        </div>
+        <div class="observation"><span class="observation-icon" aria-hidden="true">↳</span><div><span class="mini-label" id="observation-label">WHAT TO DO</span><p id="observation-copy">Start with a cylinder. Place the paper around the globe so it just touches the equator.</p></div><span id="projection-name">CENTRAL<br>CYLINDRICAL</span></div>
+        <div class="transport">
+          <button id="play" class="play-button" type="button" disabled><span id="play-icon" aria-hidden="true">▶</span><span id="play-text">Run the experiment</span></button>
+          <div class="scrubber"><label for="progress" class="sr-only">Experiment progress: place, light, trace, unfold</label><input id="progress" type="range" min="0" max="1000" value="0"><div class="scrubber-labels"><span>GLOBE</span><span id="progress-text">0% unfolded</span><span>FLAT MAP</span></div></div>
+          <button id="next" class="next-button" type="button" disabled>Place paper <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="experiment-steps" aria-label="Experiment stages">
+      <button data-step="0" class="step active" aria-current="step"><span class="step-num">1</span><span><strong>Place the paper</strong><small>Choose a surface. Find the contact.</small></span></button>
+      <button data-step="1" class="step"><span class="step-num">2</span><span><strong>Switch on the light</strong><small>Follow rays from the globe’s center.</small></span></button>
+      <button data-step="2" class="step"><span class="step-num">3</span><span><strong>Trace the shadows</strong><small>Transfer the grid and continents.</small></span></button>
+      <button data-step="3" class="step"><span class="step-num">4</span><span><strong>Unfold your map</strong><small>A curved surface becomes a flat sheet.</small></span></button>
+    </nav>
+
+    <section class="field-notes" aria-labelledby="notes-title">
+      <div class="notes-heading"><p class="eyebrow">A FEW THINGS TO NOTICE</p><h2 id="notes-title">Every flat map makes a trade.</h2><p>You can flatten the paper. You can’t flatten the globe without changing something.</p></div>
+      <article><span class="note-number">01 / CONTACT</span><h3>Start where they touch.</h3><p id="note-contact">Along the equator, the globe and cylinder share a line. Scale is true there. Move away from it and the shadows stretch.</p></article>
+      <article><span class="note-number">02 / DISTORTION</span><h3>Watch the shadows grow.</h3><p id="note-distortion">Near the poles, rays travel almost parallel to the cylinder. Their shadows shoot toward infinity. Our finite paper stops at about 63° north and south.</p></article>
+      <article><span class="note-number">03 / THE MODEL</span><h3>A useful starting point.</h3><p>This is a literal light-at-center experiment. Many maps, including Mercator and Lambert conformal conic, use mathematical rules beyond this shadow model.</p></article>
+    </section>
+    <details class="science-notes"><summary>The geometry behind the experiment <span>+</span></summary><div><p id="formula-copy"></p><p>The Earth is a unit sphere. Every shadow is computed by intersecting a ray from its center with the paper; the paper then unfolds without stretching. The cut edges are seams. Rays that miss the finite sheet are omitted. The gold rays are selected examples; the entire grid and coastline are projected.</p><p>Equal-circle overlays have the same 6° angular radius on the globe. They illustrate distortion, rather than infinitesimal Tissot indicatrices. A projection is one part of a coordinate reference system; this lab does not perform datum or EPSG transformations.</p><p>Further reading: <a href="https://pubs.usgs.gov/pp/1395/report.pdf" target="_blank" rel="noopener">USGS, Map Projections—A Working Manual</a>; <a href="https://doi.org/10.3390/ijgi8040162" target="_blank" rel="noopener">The Light Source Metaphor Revisited</a>. Coastlines: Natural Earth via world-atlas. Built with D3.</p></div></details>
+  </main>
+  <footer><span>PROJECTION LAB <span class="footer-dot">·</span> LEARN BY UNFOLDING</span><a href="../">Keep exploring in the projection atlas ↗</a></footer>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript">Enable JavaScript to run this interactive experiment.</p></noscript>
+</body>
+</html>
