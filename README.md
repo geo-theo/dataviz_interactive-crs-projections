@@ -11,9 +11,13 @@ API key, package installation, or framework required.
 - Watch the world and selected country morph over 1.45 seconds. Changing the
   projection again continues from the current shape without jumping.
 - Toggle **Tissot Circles** to compare two 5° spherical-radius circles with the
-  same geographic area. They stay at fixed geographic locations as projections
-  change and are placed clear of the selected country with a 3° margin.
-- Share a view using its URL, which stores projection, country, and circle state.
+  same geographic area. Drag either circle with the mouse or a touch screen to
+  explore distortion in different locations. Their geographic area stays fixed.
+- Circle positions persist when changing projections or countries and when
+  toggling the overlay. Focus a circle and use arrow keys to move it by 1°
+  (Shift + arrow moves it by 5°).
+- Share a view using its URL, which stores projection, country, circle visibility,
+  and manually chosen circle positions.
 - Use the keyboard or a screen reader. The layout responds to screen size and
   respects the operating system's reduced-motion preference.
 
@@ -69,8 +73,13 @@ named coordinate reference systems.
 containment and the minimum distance to the selected country's geodesic
 boundary segments before placing them. The default locations are in the
 eastern Pacific (8°N, 125°W) and North Atlantic (52°N, 35°W). Country-aware
-fallbacks handle occupied locations. The positions remain fixed while changing
-projections, so each circle is a stable distortion reference.
+fallbacks handle occupied initial locations. Manually placed circles may overlap
+any country, and their positions remain fixed while changing projections.
+Dragging rebuilds each circle as a spherical cap at its new longitude/latitude;
+it does not merely translate the projected outline. Pointer capture keeps the
+drag active outside the circle, and positions outside the globe are ignored.
+`js/drag.js` numerically inverts the current projection, including animated
+blends, using the previous location to maintain continuity.
 
 These finite 5° circles illustrate Tissot's idea; a strict Tissot indicatrix
 uses an infinitesimal circle. Equal-area projections preserve their projected

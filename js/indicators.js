@@ -131,3 +131,16 @@ export function createIndicators(d3, country, radiusDegrees = 5) {
 export function indicatorArea(radiusDegrees = 5) {
   return TAU * (1 - Math.cos(radiusDegrees * RADIANS));
 }
+
+// Rebuild the spherical cap instead of translating its projected SVG path.
+export function moveIndicator(d3, feature, center) {
+  if (!Array.isArray(center) || center.length !== 2 || !center.every(Number.isFinite)
+      || Math.abs(center[0]) > 180 || Math.abs(center[1]) > 90) {
+    throw new RangeError('Circle center must be a longitude/latitude coordinate.');
+  }
+  return {
+    ...feature,
+    properties: { ...feature.properties, center: [...center], userPosition: true },
+    geometry: d3.geoCircle().center(center).radius(feature.properties.radiusDegrees).precision(2)(),
+  };
+}

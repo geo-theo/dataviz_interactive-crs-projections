@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
 import {createProjectionCatalog, createMorph, oneHot, blendWeights, MERCATOR_LIMIT} from '../js/projections.js';
-import {createIndicators, indicatorArea} from '../js/indicators.js';
+import {createIndicators, indicatorArea, moveIndicator} from '../js/indicators.js';
 import {prepareCountries} from '../js/countries.js';
 
 const context = vm.createContext({});
@@ -192,4 +192,19 @@ test('equal-area endpoints preserve the relative projected areas of the circles'
     const path = d3.geoPath(morph(oneHot(index, catalog.length)));
     near(path.area(indicators[0]) / path.area(indicators[1]), 1, 0.005, `${entry.name}: equal projected areas`);
   });
+});
+
+test('moving an indicator rebuilds its spherical cap without changing its area', () => {
+  const original = createIndicators(d3, null)[0];
+  const originalArea = d3.geoArea(original);
+  for (const center of [[-60, -45], [80, 70], [179, 20], [-179, 20], [0, 89]]) {
+    const moved = moveIndicator(d3, original, center);
+    assert.deepEqual(moved.properties.center, center);
+    assert.equal(moved.properties.userPosition, true);
+    assert.equal(moved.properties.radiusDegrees, original.properties.radiusDegrees);
+    near(d3.geoArea(moved) / originalArea, 1, 1e-10, 'Moved circle preserves geographic area');
+    assert.ok(d3.geoDistance(d3.geoCentroid(moved), center) < 1e-10);
+    assert.deepEqual(original.properties.center, [-125, 8]);
+  }
+  assert.throws(() => moveIndicator(d3, original, [0, NaN]), RangeError);
 });

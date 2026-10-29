@@ -98,6 +98,24 @@ button[aria-pressed="true"] {
   fill: none;
   stroke: #888;
   stroke-width: 0.6;
+  pointer-events: none;
+}
+
+.indicator-control {
+  cursor: grab;
+  touch-action: none;
+}
+
+.indicator-control.dragging {
+  cursor: grabbing;
+}
+
+.indicator-control:focus-visible {
+  outline: none;
+}
+
+.indicator-control:focus-visible .indicator {
+  stroke-width: 2.5;
 }
 
 .indicator {

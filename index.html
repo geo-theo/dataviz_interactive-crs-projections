@@ -26,7 +26,7 @@
   </header>
 
   <main id="map-stage" class="map-stage" aria-label="Interactive world map">
-    <svg id="world-map" role="img" aria-labelledby="map-title map-description" preserveAspectRatio="xMidYMid meet">
+    <svg id="world-map" role="group" aria-labelledby="map-title map-description" preserveAspectRatio="xMidYMid meet">
       <title id="map-title">World map</title>
       <desc id="map-description">Choose a projection and a country using the controls above.</desc>
       <g id="map-layers">
@@ -42,7 +42,7 @@
     <div class="status" id="loading" role="status">Loading map…</div>
     <div class="status" id="error" role="alert" hidden>The map couldn’t load. Please refresh to try again.</div>
     <p class="sr-only" id="projection-description"></p>
-    <p class="sr-only" id="tissot-description">The two circles have a 5° radius and equal area on the globe. Their projected shapes show distortion.</p>
+    <p class="sr-only" id="tissot-description">Drag either circle to move it, or focus it and use the arrow keys. The two circles keep their 5° radius and equal area on the globe. Their projected shapes show distortion.</p>
     <div class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
     <noscript><div class="status">Enable JavaScript to explore the map projections.</div></noscript>
   </main>
