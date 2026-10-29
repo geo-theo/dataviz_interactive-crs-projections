@@ -51,12 +51,10 @@ async function init() {
 
   function updateDescription(announce = false) {
     const entry = catalog[projectionIndex];
-    $('projection-name').textContent = entry.name;
-    $('projection-kind').textContent = `${entry.kind} projection`;
     $('projection-description').textContent = entry.description;
-    $('country-name').textContent = country.properties.name;
+    $('projection').title = entry.description;
     $('map-title').textContent = `${entry.name} world map, highlighting ${country.properties.name}`;
-    const text = `${country.properties.name} highlighted in orange. ${entry.description}${showCircles ? ' Two blue circles have equal area on the globe and show the projection’s distortion.' : ''}`;
+    const text = `${country.properties.name} highlighted in orange. ${entry.description}${showCircles ? ' Two red circles have equal area on the globe and show the projection’s distortion.' : ''}`;
     $('map-description').textContent = text;
     if (announce) $('announcement').textContent = `${entry.name}. ${text}`;
   }
@@ -70,21 +68,12 @@ async function init() {
       const group = document.createElementNS(svgNS, 'g');
       const shape = document.createElementNS(svgNS, 'path');
       shape.setAttribute('class', 'indicator');
-      const hatch = document.createElementNS(svgNS, 'path');
-      hatch.setAttribute('class', 'indicator-hatch');
-      const center = document.createElementNS(svgNS, 'circle');
-      center.setAttribute('class', 'indicator-center');
-      center.setAttribute('r', '2');
-      const label = document.createElementNS(svgNS, 'text');
-      label.setAttribute('class', 'indicator-label');
-      label.textContent = feature.properties.label;
       const title = document.createElementNS(svgNS, 'title');
       title.textContent = `Circle ${feature.properties.label}: ${positionText(feature.properties.center)}, 5° spherical radius`;
-      group.append(title, shape, hatch, center, label);
-      return { feature, group, shape, hatch, center, label };
+      group.append(title, shape);
+      return { feature, group, shape };
     });
     $('indicators').replaceChildren(...indicators.map(i => i.group));
-    $('circle-positions').textContent = indicators.map(({ feature: f }) => `${f.properties.label} · ${positionText(f.properties.center)}`).join('   /   ');
   }
 
   function render() {
@@ -96,13 +85,6 @@ async function init() {
       for (const indicator of indicators) {
         const shape = path(indicator.feature);
         indicator.shape.setAttribute('d', shape || '');
-        indicator.hatch.setAttribute('d', shape || '');
-        const [x, y] = projection(indicator.feature.properties.center);
-        indicator.center.setAttribute('cx', x);
-        indicator.center.setAttribute('cy', y);
-        const bounds = path.bounds(indicator.feature);
-        indicator.label.setAttribute('x', x);
-        indicator.label.setAttribute('y', bounds[0][1] - 7);
       }
     }
   }
@@ -129,7 +111,6 @@ async function init() {
     else {
       animation = null;
       frame = 0;
-      $('map-stage').classList.remove('is-transitioning');
       updateDescription(true);
     }
   }
@@ -145,20 +126,17 @@ async function init() {
     if (reducedMotion.matches) {
       weights = target;
       animation = null;
-      $('map-stage').classList.remove('is-transitioning');
       render();
       updateDescription(true);
       return;
     }
     animation = { from: weights, to: target, start: now };
-    $('map-stage').classList.add('is-transitioning');
     frame = requestAnimationFrame(tick);
   }
 
   function updateToggle() {
     $('tissot-toggle').setAttribute('aria-pressed', String(showCircles));
     $('indicators').toggleAttribute('hidden', !showCircles);
-    $('circle-caption').hidden = !showCircles;
   }
 
   $('projection').addEventListener('change', changeProjection);
@@ -182,7 +160,6 @@ async function init() {
       cancelAnimationFrame(frame);
       weights = animation.to;
       animation = null;
-      $('map-stage').classList.remove('is-transitioning');
       render();
       updateDescription(true);
     }
@@ -201,7 +178,7 @@ async function init() {
 
 function start() {
   init().catch(error => {
-    console.error('Projection Atlas:', error);
+    console.error('Map projections:', error);
     $('loading').hidden = true;
     $('error').hidden = false;
   });

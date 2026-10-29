@@ -41,13 +41,9 @@ function latitudeClip(d3, limitDegrees) {
 }
 
 export function createMorph(d3, catalog, width, height) {
-  // Reserve space for the small captions, then fit every endpoint to the same
-  // world viewport. The intermediate shapes interpolate those fitted endpoints.
-  const compact = width <= 620;
-  const top = compact ? 58 : 74;
-  const bottom = compact ? 170 : 179;
-  const side = compact ? 14 : Math.max(42, width * 0.055);
-  const extent = [[side, top], [width - side, Math.max(top + 80, height - bottom)]];
+  // Fit the world to the full map area, leaving only a small edge margin.
+  const padding = Math.min(16, width * 0.025, height * 0.025);
+  const extent = [[padding, padding], [width - padding, height - padding]];
   const fitted = catalog.map(entry => {
     const p = d3.geoProjection(entry.raw).precision(0.3).fitExtent(extent, { type: 'Sphere' });
     const origin = entry.raw(0, 0);

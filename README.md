@@ -1,7 +1,8 @@
-# Projection Atlas
+# Map projections
 
 A full-page, animated map projection explorer built with vanilla HTML, CSS,
-JavaScript, D3, and TopoJSON. Designed for GitHub Pages with no runtime CDN,
+JavaScript, D3, and TopoJSON. The page contains only two native dropdowns, a
+Tissot Circles toggle, and the map. Designed for GitHub Pages with no runtime CDN,
 API key, package installation, or framework required.
 
 ## Explore
