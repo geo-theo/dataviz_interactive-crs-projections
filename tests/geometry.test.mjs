@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import test from 'node:test';
 import {createProjectionCatalog, createMorph, oneHot, blendWeights, MERCATOR_LIMIT} from '../js/projections.js';
 import {createIndicators, indicatorArea} from '../js/indicators.js';
+import {prepareCountries} from '../js/countries.js';
 
 const context = vm.createContext({});
 for (const filename of ['d3.min.js', 'd3-geo-projection.min.js', 'topojson-client.min.js']) {
@@ -17,6 +18,20 @@ const sphere = {type: 'Sphere'};
 const samplePoints = [[0, 0], [-125, 8], [-35, 52], [145, -48], [-170, 75]];
 const width = 1280;
 const height = 800;
+
+test('every country has a distinct dropdown key that survives URL state', () => {
+  const countries = prepareCountries(world.features);
+  assert.equal(new Set(countries.map(country => country.id)).size, 177);
+  for (const country of countries) {
+    assert.equal(typeof country.id, 'string');
+    const query = new URLSearchParams({country: country.id});
+    const restored = countries.find(feature => feature.id === new URLSearchParams(query.toString()).get('country'));
+    assert.equal(restored, country, `${country.properties.name} restores from its option value`);
+  }
+  for (const name of ['Kosovo', 'N. Cyprus', 'Somaliland']) {
+    assert.ok(countries.find(country => country.properties.name === name).id.startsWith('name:'));
+  }
+});
 
 function assertFinitePath(path, geometry, label) {
   const rendered = path(geometry);

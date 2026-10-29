@@ -1,5 +1,6 @@
 import { createProjectionCatalog, createMorph, oneHot, blendWeights } from './projections.js';
 import { createIndicators } from './indicators.js';
+import { prepareCountries } from './countries.js';
 
 const $ = id => document.getElementById(id);
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -12,8 +13,7 @@ async function init() {
   const response = await fetch(new URL('../data/countries-110m.json', import.meta.url));
   if (!response.ok) throw new Error(`Map data: HTTP ${response.status}`);
   const world = await response.json();
-  const countries = topojson.feature(world, world.objects.countries).features
-    .sort((a, b) => a.properties.name.localeCompare(b.properties.name, 'en'));
+  const countries = prepareCountries(topojson.feature(world, world.objects.countries).features);
   const land = topojson.feature(world, world.objects.land);
   const borders = topojson.mesh(world, world.objects.countries, (a, b) => a !== b);
   const graticule = d3.geoGraticule().step([15, 15])();
